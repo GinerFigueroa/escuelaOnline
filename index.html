@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Examen Interactivo: 50 Preguntas de Pruebas de Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e9eff7 0%, #d9e2ef 100%);
+            padding: 2rem 1.5rem;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.75);
+            border-radius: 2.5rem;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            padding: 1.5rem 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 3px solid #1e3c72;
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #0b2b44, #1b4a7a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        h1 span {
+            background: none;
+            color: #1e5a8a;
+            font-weight: 500;
+        }
+
+        .subtitle {
+            color: #2c3e4e;
+            margin-top: 8px;
+            font-weight: 500;
+            background: #f0f6fe;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        .verde { color: #0c6b4b; background: #dff3ed; padding: 2px 8px; border-radius: 20px; }
+        .rojo { color: #b13e3e; background: #ffe6e5; padding: 2px 8px; border-radius: 20px; }
+
+        .stats-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.2rem 0 0.8rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 60px;
+            padding: 8px 20px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            color: #1f3a4b;
+        }
+
+        .reset-button {
+            background: #2c3e50;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .reset-button:hover {
+            background: #1d2f3f;
+            transform: scale(0.97);
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(550px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* tarjeta pregunta */
+        .question-card {
+            background: white;
+            border-radius: 1.75rem;
+            box-shadow: 0 12px 22px -12px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .question-header {
+            background: #f9fcff;
+            padding: 1rem 1.3rem;
+            border-bottom: 2px solid #e2edf7;
+        }
+
+        .question-num {
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #1c6ea4;
+            background: #e2f0ff;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 10px;
+            color: #0c2b3b;
+            line-height: 1.4;
+        }
+
+        .options-area {
+            padding: 1rem 1.3rem 1rem 1.3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .option-btn {
+            background: #f5f9ff;
+            border-radius: 60px;
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid #dce7f2;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: 500;
+            color: #1c3e55;
+        }
+
+        .option-letter {
+            font-weight: 800;
+            background: #e9f0f8;
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            font-size: 1.1rem;
+        }
+
+        .option-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .option-btn:hover {
+            background: #e6f0fe;
+            border-color: #8bb3d1;
+            transform: translateX(4px);
+        }
+
+        /* estados de respuesta guardada */
+        .option-btn.saved-correct {
+            background: #cbf7e6;
+            border-left: 8px solid #069668;
+            border-color: #069668;
+            box-shadow: 0 2px 6px rgba(6,150,104,0.2);
+        }
+
+        .option-btn.saved-wrong {
+            background: #ffe3e2;
+            border-left: 8px solid #d14545;
+            border-color: #d14545;
+            text-decoration: none;
+        }
+
+        /* feedback pequeño */
+        .feedback-badge {
+            margin-left: auto;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: rgba(0,0,0,0.05);
+            padding: 4px 8px;
+            border-radius: 26px;
+        }
+
+        .saved-correct .feedback-badge {
+            background: #06966820;
+            color: #0a6e4e;
+        }
+        .saved-wrong .feedback-badge {
+            background: #d1454520;
+            color: #b13b3b;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #2c5a74;
+            border-top: 1px solid #cbdde9;
+            padding-top: 1.2rem;
+        }
+
+        @media (max-width: 650px) {
+            body { padding: 1rem; }
+            .app-container { padding: 1rem; }
+            .questions-grid { grid-template-columns: 1fr; }
+            .option-btn { padding: 10px 14px; }
+            .question-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <h1>📋 50 Preguntas Difíciles <span>Pruebas de Software</span></h1>
+        <p class="subtitle">✨ Haz click en cualquier opción (A, B, C, D) → se guarda como <strong class="verde">VERDADERO</strong> (acertaste) o <strong class="rojo">FALSO</strong> (fallaste). Cada respuesta queda registrada.</p>
+        <div class="stats-panel">
+            <div class="stat-card">✅ Respondidas: <span id="answeredCount">0</span>/50</div>
+            <div class="stat-card">🎯 Aciertos (Verdaderos): <span id="correctCount">0</span></div>
+            <div class="stat-card">❌ Desaciertos (Falsos): <span id="wrongCount">0</span></div>
+            <!-- BLOQUE DE RESUMEN DEL DOCUMENTO -->
+<div class="summary-card">
+    <div class="summary-title">
+        <span>📘</span> Resumen del documento · Pruebas de Software
+    </div>
+    <div class="summary-text">
+        <p>El documento aborda las pruebas de software desde una perspectiva crítica y práctica. <span class="highlight">Rechaza definiciones tradicionales</span> como “demostrar que no hay errores” y establece que el objetivo real es <strong>encontrar y eliminar errores</strong>, partiendo de la premisa de que <strong>el software siempre tiene defectos</strong>. Según ISTQB, las pruebas son un proceso integral que incluye actividades <strong>estáticas y dinámicas</strong> a lo largo del ciclo de vida del software.</p>
+        <p>Las pruebas son consideradas <strong>la herramienta más eficaz para garantizar la calidad</strong>, yendo más allá de la mera verificación: implican pensar en escenarios inimaginables. Se recalca la importancia de planificar las pruebas desde <strong>etapas tempranas</strong>, automatizar cuando sea posible, y cubrir todo el espectro desde la creación hasta la puesta en producción.</p>
+        <p>Se referencian normas internacionales como <strong>ISO/IEC 29119</strong> (procesos de pruebas), <strong>ISO/IEC 25010</strong> (modelo de calidad de producto), <strong>ISO 9126-3, ISO 25040</strong>, entre otras. Los <strong>niveles de prueba</strong> incluyen: pruebas de componente (desarrollador), integración (verificación de interfaces), sistema (ejercicio completo) y aceptación (responsabilidad del cliente/usuario). Las técnicas estructurales corresponden a <strong>pruebas de caja blanca</strong>.</p>
+        <p>El <strong>proceso de planificación</strong> es fundamental: se elabora un <em>plan de pruebas maestro</em> que define estrategia, responsabilidades, tiempos, casos de prueba y <strong>trazabilidad de requisitos</strong>. La estrategia debe detallar el enfoque (unidad, integración, sistema) y tipos de prueba (funcional, rendimiento, carga, tensión). La estimación debe considerar técnicas consolidadas y el <strong>triángulo de la calidad</strong>.</p>
+        <p>Finalmente, el <strong>ambiente de pruebas</strong> debe ser seguro, aislado, similar a producción, con control de versiones riguroso. Los desarrolladores <strong>no deben tener privilegios de modificación</strong> en dicho entorno; solo el administrador del ambiente de pruebas puede instalar, actualizar o desplegar, garantizando estabilidad y confiabilidad en los resultados.</p>
+    </div>
+</div>
+            <button id="resetBtn" class="reset-button">⟳ Reiniciar todas las respuestas</button>
+        </div>
+    </header>
+
+
+    <main id="questionsContainer" class="questions-grid"></main>
+
+    <footer>
+        <p>📌 Basado en principios ISTQB y testing profesional. Cada selección es persistente en el navegador. Si respondes correctamente se marca VERDADERO, si eliges otra opción se marca FALSO. ¡Aprende y pon a prueba tus conocimientos!</p>
+    </footer>
+</div>
+
+
+
+<script>
+    // --------------------------------------------------------------
+    // DATOS: 30 PREGUNTAS COMPLETAS (pregunta, opciones, respuesta correcta: letra)
+    // --------------------------------------------------------------
+    
+
+    const questionsData = [
+    { text: "Según MYE, ¿cuál es la premisa fundamental que debemos tener al realizar pruebas de software?", options: ["El software siempre funciona correctamente", "Las pruebas demuestran la ausencia de errores", "El software tiene errores, y las pruebas sirven para encontrarlos", "Las pruebas solo se hacen al final del desarrollo"], correct: "C" },
+    { text: "¿Cómo define ISTQB las pruebas de software?", options: ["Un proceso únicamente dinámico para ejecutar programas", "Un proceso que incluye actividades estáticas y dinámicas relacionadas con planificación, preparación y evaluación para determinar cumplimiento de requisitos y detectar defectos", "Un conjunto de actividades solo para validar la interfaz de usuario", "Una actividad exclusiva del equipo de desarrollo"], correct: "B" },
+    { text: "Según el documento, ¿cuál es la herramienta más eficaz para asegurar la calidad de un producto software?", options: ["La documentación detallada", "Las pruebas de software (prevención, detección y corrección de defectos)", "El uso de lenguajes de programación modernos", "La contratación de personal externo"], correct: "B" },
+    { text: "¿Qué norma ISO/IEC se menciona para los modelos de procesos de pruebas de software?", options: ["ISO/IEC 25010", "ISO/IEC 9126", "ISO/IEC 29119", "ISO/IEC 25040"], correct: "C" },
+    { text: "¿Qué abarcan las pruebas de software en cuanto a etapas del desarrollo?", options: ["Solo la etapa de codificación", "Solo la etapa de producción", "Cualquier estadío, desde la creación hasta la puesta en producción", "Únicamente la etapa de diseño"], correct: "C" },
+    { text: "¿Cómo se denominan también las pruebas de componente o unidad?", options: ["Pruebas de integración", "Pruebas de sistema", "Pruebas de aceptación", "Pruebas de Desarrollador (developer’s test)"], correct: "D" },
+    { text: "¿Qué verifican las pruebas de integración?", options: ["Solo el funcionamiento de un componente aislado", "Las interfaces entre componentes y las interacciones con sistema operativo, hardware, etc.", "La aceptación del usuario final", "El rendimiento en producción"], correct: "B" },
+    { text: "¿Cuál es el objetivo de las pruebas del sistema?", options: ["Verificar solo la interfaz de usuario", "Ejercitar profundamente el sistema comprobando la integración global y las interfaces entre subsistemas", "Demostrar que no hay errores", "Realizar pruebas exclusivamente automáticas"], correct: "B" },
+    { text: "¿Quiénes son a menudo responsables de las pruebas de aceptación?", options: ["Los desarrolladores", "Los analistas de calidad", "Los clientes y/o usuarios del sistema", "El administrador de bases de datos"], correct: "C" },
+    { text: "¿Qué nombre reciben las pruebas estructurales que indagan el comportamiento interno del software?", options: ["Pruebas de caja negra", "Pruebas de caja blanca (white-box testing)", "Pruebas de regresión", "Pruebas de humo"], correct: "B" },
+    { text: "¿Cuál es el propósito principal del proceso de planificación de pruebas?", options: ["Ejecutar todas las pruebas automáticamente", "Definir la estrategia, asignar responsabilidades, tiempos, esfuerzos y construir casos de prueba", "Corregir todos los errores encontrados", "Instalar el ambiente de producción"], correct: "B" },
+    { text: "¿Qué documento se elabora en el proceso de planificación de pruebas?", options: ["El caso de uso", "El plan de pruebas maestro", "El informe de incidentes", "El manual de usuario"], correct: "B" },
+    { text: "¿Qué permite gestionar el plan de pruebas en cuanto a requisitos?", options: ["La creación de nuevos requisitos", "La trazabilidad de los requisitos y el porcentaje de avance", "La eliminación de requisitos no funcionales", "La automatización de requisitos"], correct: "B" },
+    { text: "¿Qué debe contemplar el plan de pruebas maestro a nivel macro?", options: ["Solo el presupuesto del proyecto", "Las políticas y estrategias a considerarse en todo el ciclo de pruebas", "Únicamente los casos de prueba", "La nómina del equipo de desarrollo"], correct: "B" },
+    { text: "¿Qué describe una estrategia de pruebas?", options: ["El código fuente de la aplicación", "El enfoque y los objetivos generales de las tareas de pruebas, incluyendo fases y clases de prueba", "La interfaz de usuario del sistema", "El manual de instalación"], correct: "B" },
+    { text: "¿Qué se debe considerar para evitar incumplir plazos en las pruebas?", options: ["No hacer estimaciones", "Seguir técnicas de estimación del tiempo, recursos y considerar el triángulo de la calidad", "Reducir el número de pruebas", "Probar solo en producción"], correct: "B" },
+    { text: "¿Qué es un entorno de pruebas?", options: ["El mismo entorno de producción", "Un espacio seguro donde los fallos no tienen repercusión", "El computador personal del desarrollador", "Un entorno sin control de versiones"], correct: "B" },
+    { text: "¿Deben los desarrolladores poseer privilegios de modificación en el ambiente de pruebas?", options: ["Sí, para corregir errores rápidamente", "Solo si son pruebas unitarias", "No, para evitar cambios en la configuración no informados", "Sí, pero solo en horario laboral"], correct: "C" },
+    { text: "¿Quién se encarga de instalar, actualizar o desplegar en el ambiente de pruebas?", options: ["El desarrollador directamente", "El líder de proyecto", "Solo el administrador del ambiente de pruebas", "El usuario final"], correct: "C" },
+    { text: "Según las conclusiones del documento, ¿qué tres beneficios principales aporta el testing?", options: ["Aumenta la complejidad, reduce costos y elimina la documentación", "Reduce riesgos, mejora la calidad y debe planificarse desde etapas tempranas", "Acelera el desarrollo, elimina todos los errores y no requiere planificación", "Sustituye al control de versiones, automatiza todo y no necesita ambiente"], correct: "B" },
+
+        { text: "¿Cuál es el principal objetivo de las pruebas de software según ISTQB?", options: ["Demostrar que el software no tiene errores", "Encontrar defectos y evaluar la calidad del software", "Garantizar que el usuario nunca tenga fallos", "Reducir el tiempo de desarrollo"], correct: "B" },
+        { text: "¿Qué principio afirma que no se pueden probar todas las combinaciones posibles?", options: ["Paradoja del pesticida", "Agrupamiento de defectos", "Pruebas exhaustivas imposibles", "Testing temprano"], correct: "C" },
+        { text: "¿Cuál es una característica de las pruebas estáticas?", options: ["Requerir ejecución del sistema", "Evaluar rendimiento del software", "Analizan artefactos sin ejecutar código", "Solo se usan en pruebas funcionales"], correct: "C" },
+        { text: "¿Qué nivel de prueba verifica la interacción entre módulos?", options: ["Pruebas unitarias", "Pruebas de integración", "Pruebas de aceptación", "Pruebas alfa"], correct: "B" },
+        { text: "¿Qué norma está orientada específicamente al testing de software?", options: ["ISO 9001", "ISO 29119", "IEEE 754", "COBIT"], correct: "B" },
+        { text: "¿Qué describe mejor la paradoja del pesticida?", options: ["Las pruebas eliminan todos los errores", "Repetir las mismas pruebas deja de encontrar defectos nuevos", "El software envejece con el tiempo", "Los errores aparecen solo en producción"], correct: "B" },
+        { text: "¿Qué tipo de prueba pertenece a 'Caja Blanca'?", options: ["Funcional", "Exploratoria", "Estructural", "Aceptación"], correct: "C" },
+        { text: "¿Qué proceso define tiempos, recursos y responsabilidades de pruebas?", options: ["Diseño UML", "Gestión de incidencias", "Planificación de pruebas", "Integración continua"], correct: "C" },
+        { text: "¿Qué significa 'Defect Clustering'?", options: ["Los errores aparecen aleatoriamente", "La mayoría de defectos se concentran en pocos módulos", "Los defectos desaparecen automáticamente", "Todos los módulos tienen igual cantidad de errores"], correct: "B" },
+        { text: "¿Qué prueba es responsabilidad frecuente del cliente?", options: ["Unitarias", "Integración", "Aceptación", "Estructurales"], correct: "C" },
+        { text: "¿Cuál NO es un tipo de prueba?", options: ["Funcional", "No funcional", "Estructural", "Matemática"], correct: "D" },
+        { text: "¿Qué busca una prueba funcional?", options: ["Analizar código fuente", "Revisar estructura interna", "Verificar requisitos del sistema", "Medir líneas de código"], correct: "C" },
+        { text: "¿Qué técnica usa cartas para estimar esfuerzo?", options: ["Delphi", "Puntos funcionales", "Planning Poker", "Tres puntos"], correct: "C" },
+        { text: "¿Qué representa la 'R' en la técnica de tres puntos?", options: ["Riesgo", "Realista", "Revisión", "Resultado"], correct: "B" },
+        { text: "¿Qué ocurre si un ambiente de pruebas cambia constantemente?", options: ["Mejora la estabilidad", "Reduce defectos", "Puede invalidar resultados de pruebas", "Aumenta la velocidad de producción"], correct: "C" },
+        { text: "¿Cuál es una característica correcta del ambiente de pruebas?", options: ["Compartir servidor con producción", "Tener configuraciones similares a producción", "Permitir cambios directos de desarrolladores", "Usar herramientas distintas a producción"], correct: "B" },
+        { text: "¿Qué prueba ejecuta realmente el software?", options: ["Estática", "Dinámica", "Documental", "Predictiva"], correct: "B" },
+        { text: "¿Cuál es el enfoque correcto del testing moderno?", options: ["Ocultar errores", "Encontrar defectos para mejorar calidad", "Reducir documentación", "Evitar automatización"], correct: "B" },
+        { text: "¿Qué documento guía la ejecución de pruebas?", options: ["Manual técnico", "Caso de prueba", "Modelo entidad-relación", "Script SQL"], correct: "B" },
+        { text: "¿Qué principio indica iniciar pruebas desde etapas tempranas?", options: ["Defect clustering", "Early testing", "Pesticide paradox", "Fallacy absence of errors"], correct: "B" },
+        { text: "¿Cuál es el principal beneficio del testing?", options: ["Eliminar programadores", "Reducir riesgos", "Evitar documentación", "Reemplazar usuarios"], correct: "B" },
+        { text: "¿Qué prueba valida el sistema completo?", options: ["Unitaria", "Integración", "Sistema", "Componente"], correct: "C" },
+        { text: "¿Qué significa trazabilidad en pruebas?", options: ["Ejecutar más rápido", "Relacionar requisitos con pruebas", "Eliminar errores automáticamente", "Crear interfaces gráficas"], correct: "B" },
+        { text: "¿Cuál NO es responsabilidad del plan maestro de pruebas?", options: ["Definir estrategia", "Asignar responsabilidades", "Programar vacaciones del equipo", "Estimar esfuerzos"], correct: "C" },
+        { text: "¿Qué prueba analiza el comportamiento interno del sistema?", options: ["Caja negra", "Exploratoria", "Caja blanca", "Aceptación"], correct: "C" },
+        { text: "¿Qué método utiliza opiniones de expertos para estimar?", options: ["Delphi", "Poker", "Scrum", "Kanban"], correct: "A" },
+        { text: "¿Qué sucede si solo se prueban casos positivos?", options: ["Mejora cobertura", "Se reducen defectos críticos", "Aumenta riesgo de fallos no detectados", "Garantiza calidad total"], correct: "C" },
+        { text: "¿Qué busca una prueba no funcional?", options: ["Revisar requisitos de negocio", "Medir rendimiento, seguridad o usabilidad", "Crear código fuente", "Generar bases de datos"], correct: "B" },
+        { text: "¿Por qué los desarrolladores no deberían modificar el ambiente de pruebas?", options: ["Porque no conocen el sistema", "Para mantener control y estabilidad", "Porque el ambiente no tiene software", "Porque solo QA puede usar computadoras"], correct: "B" },
+        { text: "¿Qué conclusión resume mejor el testing de software?", options: ["Garantiza software perfecto", "Solo sirve al final del proyecto", "Mejora calidad y reduce riesgos desde etapas tempranas", "Es opcional en proyectos críticos"], correct: "C" }
+    ];
+
+    // Almacenamiento de respuestas del usuario: objeto { qIndex: { selectedLetter: 'A', isCorrect: true/false } }
+    let userResponses = {};
+
+    // Cargar desde localStorage
+    function loadFromStorage() {
+        const stored = localStorage.getItem("exam30_responses");
+        if(stored) {
+            try {
+                userResponses = JSON.parse(stored);
+            } catch(e) {}
+        }
+        // asegurar estructura limpia, sincronizar si hay preguntas nuevas
+        if(!userResponses) userResponses = {};
+    }
+
+    function saveToStorage() {
+        localStorage.setItem("exam30_responses", JSON.stringify(userResponses));
+    }
+
+    // Actualizar contadores (respondidas, correctas, incorrectas)
+    function updateStats() {
+        const total = questionsData.length;
+        const answeredKeys = Object.keys(userResponses).filter(idx => userResponses[idx] && userResponses[idx].selectedLetter !== undefined);
+        const answeredCount = answeredKeys.length;
+        let correctTotal = 0;
+        let wrongTotal = 0;
+        for(let idx in userResponses) {
+            if(userResponses[idx] && userResponses[idx].isCorrect === true) correctTotal++;
+            else if(userResponses[idx] && userResponses[idx].isCorrect === false) wrongTotal++;
+        }
+        document.getElementById("answeredCount").innerText = answeredCount;
+        document.getElementById("correctCount").innerText = correctTotal;
+        document.getElementById("wrongCount").innerText = wrongTotal;
+    }
+
+    // Renderizar todas las preguntas con el estado actual
+    function renderQuestions() {
+        const container = document.getElementById("questionsContainer");
+        if(!container) return;
+        container.innerHTML = "";
+        
+        questionsData.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            
+            const headerDiv = document.createElement("div");
+            headerDiv.className = "question-header";
+            headerDiv.innerHTML = `
+                <span class="question-num">Pregunta ${idx+1}</span>
+                <div class="question-text">${escapeHtml(q.text)}</div>
+            `;
+            
+            const optionsDiv = document.createElement("div");
+            optionsDiv.className = "options-area";
+            
+            const letters = ["A", "B", "C", "D"];
+            // obtener estado guardado
+            const savedResponse = userResponses[idx];
+            const savedLetter = savedResponse ? savedResponse.selectedLetter : null;
+            
+            letters.forEach((letter, optIndex) => {
+                const optText = q.options[optIndex];
+                const isCorrectAnswer = (letter === q.correct);
+                // determinar si esta opción es la que el usuario seleccionó
+                const isSelected = (savedLetter === letter);
+                let additionalClass = "";
+                let feedbackMsg = "";
+                if(isSelected) {
+                    // si está seleccionada y es la correcta -> verdadero, else falso
+                    if(isCorrectAnswer) {
+                        additionalClass = "saved-correct";
+                        feedbackMsg = "✔ VERDADERO";
+                    } else {
+                        additionalClass = "saved-wrong";
+                        feedbackMsg = "✘ FALSO";
+                    }
+                }
+                
+                const optionBtn = document.createElement("div");
+                optionBtn.className = `option-btn ${additionalClass}`;
+                optionBtn.setAttribute("data-qidx", idx);
+                optionBtn.setAttribute("data-letter", letter);
+                
+                optionBtn.innerHTML = `
+                    <div class="option-letter">${letter}</div>
+                    <div class="option-text">${escapeHtml(optText)}</div>
+                    ${feedbackMsg ? `<div class="feedback-badge">${feedbackMsg}</div>` : '<div class="feedback-badge" style="opacity:0.5;">⬤</div>'}
+                `;
+                
+                optionBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    handleAnswer(idx, letter, isCorrectAnswer);
+                });
+                optionsDiv.appendChild(optionBtn);
+            });
+            
+            // agregar info extra de respuesta correcta (pequeño detalle de referencia pero no interactivo)
+            const metaInfo = document.createElement("div");
+            metaInfo.style.padding = "0 1.3rem 1rem 1.3rem";
+            metaInfo.style.fontSize = "0.7rem";
+            metaInfo.style.color = "#4d708a";
+            metaInfo.style.borderTop = "1px solid #ecf3f9";
+            metaInfo.style.marginTop = "4px";
+            metaInfo.innerHTML = `<span>🔍 Correcta: ${q.correct}</span>`;
+            
+            card.appendChild(headerDiv);
+            card.appendChild(optionsDiv);
+            card.appendChild(metaInfo);
+            container.appendChild(card);
+        });
+        updateStats();
+    }
+    
+    // Manejar respuesta: guardar como verdadero (si es correcta) o falso
+    function handleAnswer(qIndex, selectedLetter, isAnswerCorrect) {
+        // Actualizar o crear registro
+        userResponses[qIndex] = {
+            selectedLetter: selectedLetter,
+            isCorrect: isAnswerCorrect,
+            correctLetter: questionsData[qIndex].correct
+        };
+        saveToStorage();
+        // Re-renderizar para reflejar cambios visuales en toda la UI
+        renderQuestions();
+    }
+    
+    // Reset total de respuestas
+    function resetAllAnswers() {
+        userResponses = {};
+        saveToStorage();
+        renderQuestions();
+    }
+    
+    // utilidad XSS
+    function escapeHtml(str) {
+        if(!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+    
+    // Inicializar evento del reset
+    function init() {
+        loadFromStorage();
+        renderQuestions();
+        const resetBtn = document.getElementById("resetBtn");
+        if(resetBtn) resetBtn.addEventListener("click", resetAllAnswers);
+    }
+    
+    init();
+
+  
+
+</script>
+</body>
+</html>
+
+
